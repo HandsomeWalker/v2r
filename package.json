@@ -1,0 +1,32 @@
+{
+  "name": "v2r",
+  "version": "1.0.0",
+  "description": "v2r",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "yarn build:live",
+    "build:live": "nodemon --exec node src/index.js",
+    "test": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HandsomeWalker/v2r.git"
+  },
+  "author": "dreamcreativehub@gmail.com",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/HandsomeWalker/v2r/issues"
+  },
+  "homepage": "https://github.com/HandsomeWalker/v2r#readme",
+  "dependencies": {
+    "@babel/generator": "^7.20.4",
+    "@babel/parser": "^7.20.3",
+    "@babel/traverse": "^7.20.1",
+    "@babel/types": "^7.20.2",
+    "@vue/compiler-sfc": "^3.2.45"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
