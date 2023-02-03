@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "v2r",
   "main": "src/index.js",
-  "type": "module",
   "scripts": {
     "start": "yarn build:live",
     "build:live": "nodemon --exec node src/index.js",
@@ -24,7 +23,8 @@
     "@babel/parser": "^7.20.3",
     "@babel/traverse": "^7.20.1",
     "@babel/types": "^7.20.2",
-    "@vue/compiler-sfc": "^3.2.45"
+    "@vue/compiler-sfc": "^3.2.45",
+    "vue-template-compiler": "^2.7.14"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"

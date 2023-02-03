@@ -1,20 +1,31 @@
 <script setup>
-import { ref, reactive } from 'vue';
-import traverse from '@babel/traverse';
+import {
+  ref,
+  reactive,
+  computed,
+  readonly,
+  watchEffect,
+  watchPostEffect,
+  watchSyncEffect,
+  watch,
+} from "vue";
 
-const a = ref(1);
-const b = reactive({ count: 0 });
-b.count++;
-b.count = 33;
+const count = ref(1);
+const title = ref("标题");
+const data = reactive({ count: 0 });
+data.count++;
+data.count = 33;
 
 function test() {
-  console.log('test');
-  a.value = 2;
+  console.log("test");
+  count.value = 2;
 }
 </script>
 
 <template>
-  <div class="title">{{ a }}</div>
+  <div class="title" :title="title" @click="test">
+    {{ count }} - {{ data.count }}
+  </div>
 </template>
 
 <style lang="less" scoped>
