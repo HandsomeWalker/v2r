@@ -1,14 +1,14 @@
-const { resolve } = require('path');
-const vueCompilerSfc = require('@vue/compiler-sfc');
-const vueTemplateCompiler = require('vue-template-compiler');
-const fs = require('fs');
-const util = require('util');
-const parser = require('@babel/parser');
-const traverse = require('@babel/traverse').default;
-const generator = require('@babel/generator').default;
-const t = require('@babel/types');
-const { initState } = require('./stateHandler.js');
-const { initTemplate } = require('./templateHandler.js');
+const { resolve } = require("path");
+const vueCompilerSfc = require("@vue/compiler-sfc");
+const vueTemplateCompiler = require("vue-template-compiler");
+const fs = require("fs");
+const util = require("util");
+const parser = require("@babel/parser");
+const traverse = require("@babel/traverse").default;
+const generator = require("@babel/generator").default;
+const t = require("@babel/types");
+const { initState } = require("./stateHandler.js");
+const { initTemplate } = require("./templateHandler.js");
 
 let store = {
   ref: [],
@@ -24,10 +24,30 @@ async function main() {
   let jsAst = parser.parse(vueParseObj.descriptor.scriptSetup.content, {
     sourceType: "module",
   });
-  let templateAst = vueTemplateCompiler.compile(vueParseObj.descriptor.template.content);
+  let { ast: templateAst } = vueTemplateCompiler.compile(
+    vueParseObj.descriptor.template.content
+  );
   jsAst = initState(jsAst, store);
-  templateAst = initTemplate(templateAst, store);
-  const { code: jsCode } = generator(jsAst);
+  templateAst = initTemplate(templateAst, null, new Set());
+  const { code: jsCode } = generator(
+    t.program(
+      [
+        ...jsAst.program.body.filter((item) => t.isImportDeclaration(item)),
+        t.functionDeclaration(
+          t.identifier("VueTest"),
+          [t.identifier("props")],
+          t.blockStatement([
+            ...jsAst.program.body.filter(
+              (item) => !t.isImportDeclaration(item)
+            ),
+            t.returnStatement(templateAst),
+          ])
+        ),
+      ],
+      undefined,
+      "module"
+    )
+  );
   fs.writeFileSync(resolve(__dirname, "demo/res.tsx"), jsCode, {
     encoding: "utf-8",
   });

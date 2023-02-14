@@ -25,7 +25,46 @@ function upperCaseFirst(str) {
   return str.slice(0, 1).toUpperCase() + str.slice(1);
 }
 
+const eventMap = {
+  click: 'onClick',
+  dblclick: 'onDoubleClick',
+  abort: 'onAbort',
+  change: 'onChange',
+  error: 'onError',
+  focus: 'onFocus',
+  blur: 'onBlur',
+  keydown: 'onKeyDown',
+  keyup: 'onKeyUp',
+  keypress: 'onKeyPress',
+  load: 'onLoad',
+  mousedown: 'onMouseDown',
+  mouseup: 'onMouseUp',
+  mousemove: 'onMouseMove',
+  mouseenter: 'onMouseEnter',
+  mouseleave: 'onMouseLeave',
+  mouseout: 'onMouseOut',
+  mouseover: 'onMouseOver',
+  reset: 'onReset',
+  resize: 'onResize',
+  select: 'onSelect',
+  submit: 'onSubmit',
+  unload: 'onUnload',
+  drag: 'onDrag',
+  dragend: 'onDragEnd',
+  dragenter: 'onDragEnter',
+  dragexit: 'onDragExit',
+  dragleave: 'onDragLeave',
+  dragover: 'onDragOver',
+  dragstart: 'onDragStart',
+  drop: 'onDrop',
+  touchstart: 'onTouchStart',
+  touchend: 'onTouchEnd',
+  touchcancel: 'onTouchCancel',
+  touchmove: 'onTouchMove'
+};
+
 module.exports = {
   isIncludingState,
-  upperCaseFirst
+  upperCaseFirst,
+  eventMap
 };

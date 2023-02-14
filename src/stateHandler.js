@@ -1,5 +1,5 @@
-const traverse = require('@babel/traverse').default;
-const t = require('@babel/types');
+const traverse = require("@babel/traverse").default;
+const t = require("@babel/types");
 const { isIncludingState, upperCaseFirst } = require("./utils.js");
 
 function handleExpressionStatement(
@@ -16,29 +16,37 @@ function handleExpressionStatement(
   if (temp.stateType === "ref") {
     if (propertyName === "value") {
       path.replaceWith(
-        t.callExpression(t.identifier(`set${upperCaseFirst(name)}`), [
-          expression,
-        ])
+        t.expressionStatement(
+          t.callExpression(t.identifier(`set${upperCaseFirst(name)}`), [
+            expression,
+          ])
+        )
       );
     }
   } else {
     if (temp.sourceType === "ObjectExpression") {
       path.insertAfter(
-        t.callExpression(t.identifier(`set${upperCaseFirst(name)}`), [
-          t.objectExpression([t.spreadElement(t.identifier(name))]),
-        ])
+        t.expressionStatement(
+          t.callExpression(t.identifier(`set${upperCaseFirst(name)}`), [
+            t.objectExpression([t.spreadElement(t.identifier(name))]),
+          ])
+        )
       );
     } else if (temp.sourceType === "ArrayExpression") {
       path.insertAfter(
-        t.callExpression(t.identifier(`set${upperCaseFirst(name)}`), [
-          t.arrayExpression([t.spreadElement(t.identifier(name))]),
-        ])
+        t.expressionStatement(
+          t.callExpression(t.identifier(`set${upperCaseFirst(name)}`), [
+            t.arrayExpression([t.spreadElement(t.identifier(name))]),
+          ])
+        )
       );
     } else {
       path.insertAfter(
-        t.callExpression(t.identifier(`set${upperCaseFirst(name)}`), [
-          expression,
-        ])
+        t.expressionStatement(
+          t.callExpression(t.identifier(`set${upperCaseFirst(name)}`), [
+            expression,
+          ])
+        )
       );
     }
   }
@@ -126,5 +134,5 @@ function initState(ast, store) {
 }
 
 module.exports = {
-  initState
+  initState,
 };

@@ -9,11 +9,14 @@ import {
   watchSyncEffect,
   watch,
 } from "vue";
+import traverse from '@babel/traverse';
 
 const count = ref(1);
 const title = ref("标题");
 const data = reactive({ count: 0 });
+const arr = reactive([1, 2, 3, 4]);
 data.count++;
+arr[2] = 10;
 data.count = 33;
 
 function test() {
@@ -24,7 +27,8 @@ function test() {
 
 <template>
   <div class="title" :title="title" @click="test">
-    {{ count }} - {{ data.count }}
+    <span v-if="count === 2">{{ count }} - {{ data.count }}</span>
+    <b v-for="(item, index) in arr" :key="index">{{ item }} - {{ index }}</b>
   </div>
 </template>
 
