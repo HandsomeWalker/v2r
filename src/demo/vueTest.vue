@@ -10,6 +10,7 @@ import {
   watch,
 } from "vue";
 import traverse from '@babel/traverse';
+import DatePicker from './DatePicker';
 
 const count = ref(1);
 const title = ref("标题");
@@ -26,14 +27,19 @@ function test() {
 </script>
 
 <template>
-  <div class="title" :title="title" @click="test">
+  <div class="box" :title="title" @click="test">
     <span v-if="count === 2">{{ count }} - {{ data.count }}</span>
+    <strong v-else-if="count === 3">士大夫</strong>
+    <i v-else title="电视放">的身高和</i>
+    <h1 v-if="count > 1">h1</h1>
+    <h2 v-if="count > 2">h2</h2>
     <b v-for="(item, index) in arr" :key="index">{{ item }} - {{ index }}</b>
+    <DatePicker :start="new Date()" />
   </div>
 </template>
 
 <style lang="less" scoped>
-.title {
+.box {
   color: red;
 }
 </style>

@@ -4,7 +4,6 @@ const vueTemplateCompiler = require("vue-template-compiler");
 const fs = require("fs");
 const util = require("util");
 const parser = require("@babel/parser");
-const traverse = require("@babel/traverse").default;
 const generator = require("@babel/generator").default;
 const t = require("@babel/types");
 const { initState } = require("./stateHandler.js");
@@ -46,7 +45,8 @@ async function main() {
       ],
       undefined,
       "module"
-    )
+    ),
+    { jsescOption: { minimal: true } }
   );
   fs.writeFileSync(resolve(__dirname, "demo/res.tsx"), jsCode, {
     encoding: "utf-8",

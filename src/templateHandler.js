@@ -1,4 +1,5 @@
 const t = require("@babel/types");
+const traverse = require("@babel/traverse").default;
 const { eventMap } = require("./utils.js");
 
 function initTemplate(vnode, parentElement, attrsCollector) {
@@ -22,7 +23,6 @@ function initTemplate(vnode, parentElement, attrsCollector) {
       commonAttrs = attrs.map((attr) => {
         if (attr.dynamic === false) {
           // attr.dynamic === false
-          // Support following syntax:
           // <div :data="list" v-bind:content="content"/> -> <div data={list} content={content}/>
           attrsCollector.add(attr.value);
           return t.jSXAttribute(
@@ -31,7 +31,6 @@ function initTemplate(vnode, parentElement, attrsCollector) {
           );
         } else {
           // attr.dynamic === undefined
-          // Support following syntax:
           // <div id="34we3"/> -> <div id="34we3"/>
           return t.jSXAttribute(
             t.jSXIdentifier(attr.name),
@@ -41,7 +40,6 @@ function initTemplate(vnode, parentElement, attrsCollector) {
       });
     }
 
-    // Support following syntax:
     // <div class="wrapper"/> -> <div className="wrapper"/>
     let staticClassAttrs = [];
     if (staticClass) {
@@ -53,7 +51,6 @@ function initTemplate(vnode, parentElement, attrsCollector) {
       );
     }
 
-    // Support following syntax:
     // <div v-on:blur="handleBlur" @click="handleClick"/> -> <div onClick={handleClick} onBlur={handleBlur}/>
     let eventAttrs = [];
     if (events) {
@@ -72,7 +69,6 @@ function initTemplate(vnode, parentElement, attrsCollector) {
       });
     }
 
-    // Support following syntax:
     // <div :key="item.id"/> -> <div key={item.id}/>
     let keyAttrs = [];
     if (key) {
@@ -91,7 +87,6 @@ function initTemplate(vnode, parentElement, attrsCollector) {
         attrsCollector.add(directive.value);
         switch (directive.rawName) {
           case "v-show":
-            // Support following syntax:
             // <div v-show="isLoading"/> -> <div style={{display: isLoading ? 'block' : 'none'}}/>
             directivesAttr.push(
               t.jSXAttribute(
@@ -112,7 +107,6 @@ function initTemplate(vnode, parentElement, attrsCollector) {
             );
             break;
           case "v-html":
-            // Support following syntax:
             // <div v-html="template"/> -> <div dangerouslySetInnerHTML={{__html: template}}/>
             directivesAttr.push(
               t.jSXAttribute(
@@ -147,25 +141,44 @@ function initTemplate(vnode, parentElement, attrsCollector) {
     );
 
     if (ifConditions) {
-      // Support following syntax:
-      // <div v-if="show"/> -> {show && <div/>}
-      wrappedElement = t.jSXExpressionContainer(
-        t.logicalExpression("&&", t.identifier(ifConditions[0].exp), element)
-      );
+      // <div v-if="show"/> -> {show && <div/>} | {show ? foo : bar} | {(() => {if (show) return foo})()}
+      if (ifConditions.length === 1) {
+        wrappedElement = t.jSXExpressionContainer(
+          t.logicalExpression("&&", t.identifier(ifConditions[0].exp), element)
+        );
+      } else if (ifConditions.length === 2) {
+        const { block: elseBlock } = ifConditions[1];
+        const elseElement = initTemplate(elseBlock, null, attrsCollector);
+        wrappedElement = t.jSXExpressionContainer(
+          t.conditionalExpression(t.identifier(ifConditions[0].exp), element, elseElement)
+        );
+      } else {
+        let ifStatement = [];
+        for (const item of ifConditions) {
+          if (!ifStatement.length) {
+            ifStatement.push(t.ifStatement(t.identifier(item.exp), t.returnStatement(element)));
+          } else if (item.exp) {
+            ifStatement.push(t.ifStatement(t.identifier(item.exp), t.returnStatement(initTemplate(item.block, null, attrsCollector))));
+          } else {
+            ifStatement.push(t.returnStatement(initTemplate(item.block, null, attrsCollector)));
+          }
+        }
+        wrappedElement = t.jSXExpressionContainer(
+          t.callExpression(t.arrowFunctionExpression([], t.blockStatement(ifStatement)), [])
+        );
+      }
     } else if (alias) {
-      // Support following syntax:
       // <div v-for="item in list"/> -> {list.map(item => <div/>)}
       wrappedElement = t.jSXExpressionContainer(
         t.callExpression(
           t.memberExpression(t.identifier(vnode.for), t.identifier("map")),
-          [t.arrowFunctionExpression([t.identifier(alias)], element)]
+          [t.arrowFunctionExpression([t.identifier(alias), t.identifier(vnode.iterator1)], element)]
         )
       );
     } else {
       wrappedElement = element;
     }
   } else if (type === 2) {
-    // Support following syntax:
     // {{name}} -> {name}
     attrsCollector.add(vnode.text.replace(/{{/g, "").replace(/}}/g, ""));
     wrappedElement = t.jSXText(
@@ -200,10 +213,6 @@ function initTemplate(vnode, parentElement, attrsCollector) {
     ast = wrappedElement;
   }
 
-  // return {
-  //   ast,
-  //   attrsCollector
-  // };
   return ast;
 }
 
