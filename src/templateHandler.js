@@ -1,5 +1,4 @@
 const t = require("@babel/types");
-const traverse = require("@babel/traverse").default;
 const { eventMap } = require("./utils.js");
 
 function initTemplate(vnode, parentElement, attrsCollector) {

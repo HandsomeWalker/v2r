@@ -26,5 +26,5 @@ function VueTest(props) {
       if (count === 2) return <span>{ count } - { data.count }</span>;
       if (count === 3) return <strong>士大夫</strong>;
       return <i title="电视放">的身高和</i>;
-    })()}{count > 1 && <h1>h1</h1>}{count > 2 && <h2>h2</h2>}{arr.map((item, index) => <b key={index}>{ item } - { index }</b>)}<DatePicker start={new Date()}></DatePicker></div>;
+    })()}{count > 1 && <h1>h1</h1>}{count > 2 ? <h2>h2</h2> : <h3>h3</h3>}{arr.map((item, index) => <b key={index}>{ item } - { index }</b>)}<DatePicker start={new Date()}></DatePicker></div>;
 }

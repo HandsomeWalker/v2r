@@ -33,6 +33,7 @@ function test() {
     <i v-else title="电视放">的身高和</i>
     <h1 v-if="count > 1">h1</h1>
     <h2 v-if="count > 2">h2</h2>
+    <h3 v-else>h3</h3>
     <b v-for="(item, index) in arr" :key="index">{{ item }} - {{ index }}</b>
     <DatePicker :start="new Date()" />
   </div>
